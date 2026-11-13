@@ -1,0 +1,34 @@
+{
+    "name": "UIInputActions",
+    "maps": [
+        {
+            "name": "UI",
+            "id": "faabbf32-61ef-4baa-bb99-1e030e8c7733",
+            "actions": [
+                {
+                    "name": "ChargeBar",
+                    "type": "Button",
+                    "id": "84c0a719-3ffd-4ce8-a39c-81deabc47a9a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "82cb5d7d-6a35-4c3e-a4a3-4da45263cbe3",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChargeBar",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
