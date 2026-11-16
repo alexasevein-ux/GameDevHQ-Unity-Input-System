@@ -22,8 +22,7 @@ public class PlayerDroneInputManager : MonoBehaviour
 
     private void Update()
     {
-        if (Keyboard.current != null &&
-            Keyboard.current.tabKey.wasPressedThisFrame)
+        if (Keyboard.current != null && Keyboard.current.tabKey.wasPressedThisFrame)
         {
             SwitchControls();
         }

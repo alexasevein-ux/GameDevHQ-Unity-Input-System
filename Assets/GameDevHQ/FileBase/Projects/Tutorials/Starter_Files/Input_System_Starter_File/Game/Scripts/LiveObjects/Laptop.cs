@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Cinemachine;
+using Game.Scripts.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using Cinemachine;
-using Game.Scripts.UI;
 
 namespace Game.Scripts.LiveObjects
 {
@@ -32,30 +33,36 @@ namespace Game.Scripts.LiveObjects
 
         private void Update()
         {
-            if (_hacked == true)
+            if (!_hacked || Keyboard.current == null)
+                return;
+
+            // Press E to switch virtual cameras.
+            if (Keyboard.current.eKey.wasPressedThisFrame)
             {
-                if (Input.GetKeyDown(KeyCode.E))
-                {
-                    var previous = _activeCamera;
-                    _activeCamera++;
+                if (_cameras == null || _cameras.Length == 0)
+                    return;
 
-                    if (_activeCamera >= _cameras.Length)
-                        _activeCamera = 0;
+                int previous = _activeCamera;
 
-                    _cameras[_activeCamera].Priority = 11;
-                    _cameras[previous].Priority = 9;
-                }
+                _activeCamera++;
 
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    _hacked = false;
+                if (_activeCamera >= _cameras.Length)
+                    _activeCamera = 0;
 
-                    UIManager.Instance.DisplayCameraControlMessage(false);
+                _cameras[_activeCamera].Priority = 11;
+                _cameras[previous].Priority = 9;
+            }
 
-                    onHackEnded?.Invoke();
+            // Press Escape to exit camera control.
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                _hacked = false;
 
-                    ResetCameras();
-                }
+                UIManager.Instance.DisplayCameraControlMessage(false);
+
+                onHackEnded?.Invoke();
+
+                ResetCameras();
             }
         }
 

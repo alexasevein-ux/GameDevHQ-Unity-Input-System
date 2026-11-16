@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Cinemachine;
 using Game.Scripts.UI;
 
@@ -75,15 +76,45 @@ namespace Game.Scripts.LiveObjects
                 LiftControls();
                 CalculateMovement();
 
-                if (Input.GetKeyDown(KeyCode.Escape))
+                // LEGACY INPUT SYSTEM - ORIGINAL CODE
+                // if (Input.GetKeyDown(KeyCode.Escape))
+                //     ExitDriveMode();
+
+                // NEW INPUT SYSTEM
+                if (Keyboard.current != null &&
+                    Keyboard.current.escapeKey.wasPressedThisFrame)
+                {
                     ExitDriveMode();
+                }
             }
         }
 
         private void CalculateMovement()
         {
+            // LEGACY INPUT SYSTEM - ORIGINAL CODE
+            /*
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
+            */
+
+            // NEW INPUT SYSTEM
+            float h = 0f;
+            float v = 0f;
+
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.aKey.isPressed)
+                    h -= 1f;
+
+                if (Keyboard.current.dKey.isPressed)
+                    h += 1f;
+
+                if (Keyboard.current.wKey.isPressed)
+                    v += 1f;
+
+                if (Keyboard.current.sKey.isPressed)
+                    v -= 1f;
+            }
 
             var direction = new Vector3(0, 0, v);
             var velocity = direction * _speed;
@@ -100,10 +131,22 @@ namespace Game.Scripts.LiveObjects
 
         private void LiftControls()
         {
+            // LEGACY INPUT SYSTEM - ORIGINAL CODE
+            /*
             if (Input.GetKey(KeyCode.F))
                 LiftUpRoutine();
             else if (Input.GetKey(KeyCode.R))
                 LiftDownRoutine();
+            */
+
+            // NEW INPUT SYSTEM
+            if (Keyboard.current != null)
+            {
+                if (Keyboard.current.fKey.isPressed)
+                    LiftUpRoutine();
+                else if (Keyboard.current.rKey.isPressed)
+                    LiftDownRoutine();
+            }
         }
 
         private void LiftUpRoutine()

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Cinemachine;
 using Game.Scripts.UI;
 
@@ -20,7 +21,7 @@ namespace Game.Scripts.LiveObjects
 
         private bool _inFlightMode = false;
 
-        [SerializeField] 
+        [SerializeField]
         private float _rotationSpeed = 150f;
 
         [SerializeField]
@@ -42,48 +43,69 @@ namespace Game.Scripts.LiveObjects
 
         private void EnterFlightMode(InteractableZone zone)
         {
-            if (_inFlightMode != true && zone.GetZoneID() == 4)
+            if (zone == null)
+                return;
+
+            if (!_inFlightMode && zone.GetZoneID() == 4)
             {
-                _propAnim.SetTrigger("StartProps");
-                _droneCam.Priority = 11;
+                if (_propAnim != null)
+                    _propAnim.SetTrigger("StartProps");
+
+                if (_droneCam != null)
+                    _droneCam.Priority = 11;
+
                 _inFlightMode = true;
 
                 OnEnterFlightMode?.Invoke();
 
-                UIManager.Instance.DroneView(true);
-                UIManager.Instance.DisplayDroneControlMessage(true);
+                if (UIManager.Instance != null)
+                {
+                    UIManager.Instance.DroneView(true);
+                    UIManager.Instance.DisplayDroneControlMessage(true);
+                }
 
-                _interactableZone.CompleteTask(4);
+                if (_interactableZone != null)
+                    _interactableZone.CompleteTask(4);
             }
         }
 
         private void ExitFlightMode()
         {
-            _droneCam.Priority = 9;
+            if (_droneCam != null)
+                _droneCam.Priority = 9;
+
             _inFlightMode = false;
 
-            UIManager.Instance.DroneView(false);
-            UIManager.Instance.DisplayDroneControlMessage(false);
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.DroneView(false);
+                UIManager.Instance.DisplayDroneControlMessage(false);
+            }
         }
 
         private void Update()
         {
-            if (_inFlightMode)
-            {
-                CalculateTilt();
-                CalculateMovementUpdate();
+            if (!_inFlightMode || Keyboard.current == null)
+                return;
 
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    _inFlightMode = false;
-                    onExitFlightmode?.Invoke();
-                    ExitFlightMode();
-                }
+            CalculateTilt();
+            CalculateMovementUpdate();
+
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)
+            {
+                _inFlightMode = false;
+
+                onExitFlightmode?.Invoke();
+
+                ExitFlightMode();
             }
         }
 
         private void FixedUpdate()
         {
+            if (_rigidbody == null)
+                return;
+
             _rigidbody.AddForce(transform.up * 9.81f, ForceMode.Acceleration);
 
             if (_inFlightMode)
@@ -92,12 +114,15 @@ namespace Game.Scripts.LiveObjects
 
         private void CalculateMovementUpdate()
         {
-            if (Input.GetKey(KeyCode.Q))
+            if (Keyboard.current == null)
+                return;
+
+            if (Keyboard.current.qKey.isPressed)
             {
                 transform.Rotate(Vector3.up, -_rotationSpeed * Time.deltaTime);
             }
 
-            if (Input.GetKey(KeyCode.E))
+            if (Keyboard.current.eKey.isPressed)
             {
                 transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime);
             }
@@ -105,12 +130,15 @@ namespace Game.Scripts.LiveObjects
 
         private void CalculateMovementFixedUpdate()
         {
-            if (Input.GetKey(KeyCode.Space))
+            if (Keyboard.current == null || _rigidbody == null)
+                return;
+
+            if (Keyboard.current.spaceKey.isPressed)
             {
                 _rigidbody.AddForce(transform.up * _speed, ForceMode.Acceleration);
             }
 
-            if (Input.GetKey(KeyCode.V))
+            if (Keyboard.current.vKey.isPressed)
             {
                 _rigidbody.AddForce(-transform.up * _speed, ForceMode.Acceleration);
             }
@@ -118,16 +146,21 @@ namespace Game.Scripts.LiveObjects
 
         private void CalculateTilt()
         {
-            if (Input.GetKey(KeyCode.A))
+            if (Keyboard.current == null)
+                return;
+
+            if (Keyboard.current.aKey.isPressed)
                 transform.rotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y, 30);
 
-            else if (Input.GetKey(KeyCode.D))
+            else if (Keyboard.current.dKey.isPressed)
                 transform.rotation = Quaternion.Euler(0, transform.localRotation.eulerAngles.y, -30);
 
-            else if (Input.GetKey(KeyCode.W))
-                transform.rotation = Quaternion.Euler(30, transform.localRotation.eulerAngles.y, 0);
+            else if (Keyboard.current.wKey.isPressed)
+                transform.rotation = Quaternion.Euler(
+                    30, transform.localRotation.eulerAngles.y, 0
+                );
 
-            else if (Input.GetKey(KeyCode.S))
+            else if (Keyboard.current.sKey.isPressed)
                 transform.rotation = Quaternion.Euler(-30, transform.localRotation.eulerAngles.y, 0);
 
             else

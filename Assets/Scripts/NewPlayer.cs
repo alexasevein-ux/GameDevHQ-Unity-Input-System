@@ -6,7 +6,7 @@ public class NewPlayer : MonoBehaviour
     [SerializeField]
     private float _speed = 3.0f;
 
-    void Update()
+    private void Update()
     {
         // LEGACY INPUT SYSTEM - ORIGINAL CODE
         /*
@@ -31,6 +31,9 @@ public class NewPlayer : MonoBehaviour
             if (Keyboard.current.sKey.isPressed)
                 movement.y -= 1f;
         }
+
+        // Prevent faster diagonal movement
+        movement = Vector2.ClampMagnitude(movement, 1f);
 
         // Existing movement behavior
         transform.Translate(movement * _speed * Time.deltaTime);

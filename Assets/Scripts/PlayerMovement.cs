@@ -81,7 +81,9 @@ public class PlayerMovement : MonoBehaviour
         forward.Normalize();
         right.Normalize();
 
-        Vector3 movement = (right * _movementInput.x) + (forward * _movementInput.y);
+        Vector3 movement =
+            (right * _movementInput.x) +
+            (forward * _movementInput.y);
 
         movement = Vector3.ClampMagnitude(movement, 1f);
 
@@ -92,7 +94,8 @@ public class PlayerMovement : MonoBehaviour
 
         _verticalVelocity += _gravity * Time.deltaTime;
 
-        Vector3 finalMovement = movement * _speed + Vector3.up * _verticalVelocity;
+        Vector3 finalMovement =
+            movement * _speed + Vector3.up * _verticalVelocity;
 
         _characterController.Move(finalMovement * Time.deltaTime);
 
@@ -104,12 +107,12 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnMovementPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    private void OnMovementPerformed(InputAction.CallbackContext context)
     {
         _movementInput = context.ReadValue<Vector2>();
     }
 
-    private void OnMovementCanceled(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    private void OnMovementCanceled(InputAction.CallbackContext context)
     {
         _movementInput = Vector2.zero;
     }
